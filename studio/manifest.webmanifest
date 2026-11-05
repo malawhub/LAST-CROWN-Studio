@@ -1,0 +1,12 @@
+{
+  "id": "./",
+  "name": "LAST CROWN Studio",
+  "short_name": "LAST CROWN",
+  "description": "Offline-first story-to-screen production workspace.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "orientation": "any"
+}
