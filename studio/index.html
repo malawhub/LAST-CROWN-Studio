@@ -147,7 +147,7 @@ function makeCharacterPrompt(c,p){return [
 ].join('\\n\\n')}
 function makeScenePrompt(scene,p){const names=(scene.characters||'').split(',').map(x=>x.trim()).filter(Boolean),chars=readStore(CHARACTER_KEY).filter(c=>c.projectId===p.id&&names.some(n=>n.toLowerCase()===c.name.toLowerCase()));const continuity=chars.map(c=>c.name+': '+c.look+' Fixed continuity: '+(c.continuity||c.look)).join('\\n');return [
 'SCENE IMAGE PROMPT — STORY CONTINUITY',
-'Project: '+p.title+'. Episode: '+(scene.episode||'').+' Visual style: '+(p.style||'cinematic realism')+'. Genre: '+(p.genre||'drama')+'. Language context: '+(p.language||'English')+'.',
+'Project: '+p.title+'. Episode: '+(scene.episode||'')+'. Visual style: '+(p.style||'cinematic realism')+'. Genre: '+(p.genre||'drama')+'. Language context: '+(p.language||'English')+'.',
 'Scene '+scene.order+': '+scene.title+'.',
 'Location: '+(scene.location||'not specified')+'. Time: '+(scene.time||'not specified')+'.',
 'Characters in frame: '+(names.join(', ')||'not specified')+'.',
