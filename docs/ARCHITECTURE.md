@@ -34,8 +34,6 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 3. Validate the Termux FFmpeg conversion path on the target Android device; evaluate direct FFmpeg integration only if memory and package constraints permit.
 4. Evaluate genuinely free/open-source visual production tools against Android and desktop constraints; do not add credit-metered generation.
 
-
-
 ## No-credit product rule
 Core workflows must not require credit-based generation APIs, paid AI subscriptions or hidden usage charges. Prefer offline tools and locally runnable open-source software. Remote providers, if ever added as optional integrations, must be clearly labelled with account, quota, regional, licence and cost requirements and must never be a required dependency.
 
@@ -48,7 +46,6 @@ The target phone is an Android device with limited compute and storage compared 
 - Keep project backups portable.
 - Store provider credentials only in a secure server-side secret store if a backend is added; never embed API keys in browser code.
 - Clearly distinguish implemented features from planned features.
-
 
 ### Interactive panel resizing
 The comic preview exposes a native range control on each panel. Input updates the panel grid span immediately; change persists the selected 3–12 column span in the comic record. The mobile preview maps the 12-column span to a six-column grid. Export HTML uses the stored 12-column span. The native range input supplies keyboard and touch accessibility alongside drag-and-drop and arrow reordering.
