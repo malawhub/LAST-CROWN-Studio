@@ -99,6 +99,23 @@ button{border:0;border-radius:9px;padding:11px 16px;background:var(--gold);color
 <p id="sceneMessage" class="muted" role="status" aria-live="polite"></p>
 <h2>Saved scene list</h2><div id="sceneList" class="empty">Choose a project to plan scenes.</div>
 </section>
+<section class="panel wide" id="motionStudio">
+<h2>2D character animation studio</h2>
+<p class="muted">Animate a transparent character image over a scene background using lightweight motion presets. This is real-time 2D compositing, not AI animation or full 3D character rigging. Use PNG/WebP character cut-outs for the cleanest result.</p>
+<div class="grid">
+<div class="field"><label for="motionBackground">Background image</label><select id="motionBackground"><option value="">Choose scene background (optional)</option></select></div>
+<div class="field"><label for="motionCharacter">Character cut-out</label><select id="motionCharacter"><option value="">Choose character image</option></select></div>
+<div class="field"><label for="motionPreset">Movement / performance</label><select id="motionPreset"><option value="idle">Idle breathing</option><option value="walk">Walk across frame</option><option value="run">Run across frame</option><option value="enter">Dramatic entrance</option><option value="float">Floating / magical</option><option value="shake">Fear / trembling</option><option value="zoom">Cinematic push-in</option><option value="turn">Look / turn reaction</option></select></div>
+<div class="field"><label for="motionDuration">Clip duration (seconds)</label><input id="motionDuration" type="number" min="2" max="30" step="1" value="6"></div>
+<div class="field"><label for="motionScale">Character size (%)</label><input id="motionScale" type="range" min="15" max="100" value="55"><output id="motionScaleValue">55%</output></div>
+<div class="field"><label for="motionPosition">Character placement</label><select id="motionPosition"><option value="center">Centre</option><option value="left">Left side</option><option value="right">Right side</option></select></div>
+</div>
+<div style="background:#050507;border:1px solid var(--line);border-radius:12px;overflow:hidden">
+<canvas id="motionCanvas" width="960" height="540" style="display:block;width:100%;height:auto;aspect-ratio:16/9"></canvas>
+</div>
+<div class="actions"><button type="button" id="motionPreview">Play preview</button><button type="button" id="motionStop" class="secondary">Stop</button><button type="button" id="motionExport">Export WebM clip</button></div>
+<p id="motionMessage" class="muted" role="status" aria-live="polite">Choose a project and add character/scene images in the Asset Library.</p>
+</section>
 <section class="panel wide"><h2>Episode timeline</h2>
 <p class="muted">Arrange existing scenes, reference images, audio clips and subtitle cues on one episode timeline. This is a local planning editor, not a video renderer. Audio duration is left unset until you enter it.</p>
 <div class="actions"><button type="button" id="timelineAddScenes">Add episode scenes</button><button type="button" class="secondary" id="timelineAddImages">Add project images</button><button type="button" class="secondary" id="timelineAddAudio">Add episode audio</button><button type="button" class="secondary" id="timelineAddSubtitles">Add subtitle cues</button></div>
@@ -416,4 +433,42 @@ render();
 migrateEpisodes();
 
 if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>{const status=document.getElementById('offlineStatus');navigator.serviceWorker.register('./service-worker.js',{updateViaCache:'none'}).then(registration=>{if(registration.waiting&&status)status.textContent='Update ready — reopen Studio';return navigator.serviceWorker.ready}).then(()=>{const update=()=>{if(!status)return;status.textContent=!navigator.onLine?'Offline mode active':navigator.serviceWorker.controller?'Offline app ready':'Preparing offline app…'};update();window.addEventListener('online',update);window.addEventListener('offline',update);navigator.serviceWorker.addEventListener('controllerchange',update)}).catch(()=>{if(status)status.textContent='Offline install unavailable in this browser'})})}
+
+/* Lightweight local 2D character compositor */
+(()=>{
+ const $=id=>document.getElementById(id), canvas=$('motionCanvas'), ctx=canvas.getContext('2d');
+ const state={bg:null,char:null,playing:false,raf:0,start:0,recorder:null,chunks:[],images:new Map()};
+ const storageKey='last-crown-studio.motion.v1';
+ const read=()=>{try{return JSON.parse(localStorage.getItem(storageKey)||'{}')}catch{return {}}};
+ const save=()=>{const p=$('activeProject').value,e=$('episodeSelect').value;if(!p)return;const all=read();all[p+'|'+e]={bg:$('motionBackground').value,char:$('motionCharacter').value,preset:$('motionPreset').value,duration:$('motionDuration').value,scale:$('motionScale').value,position:$('motionPosition').value};localStorage.setItem(storageKey,JSON.stringify(all))};
+ const projectAssets=()=>{const p=$('activeProject').value;try{return JSON.parse(localStorage.getItem('last-crown-studio.assets.v1')||'[]').filter(a=>a.projectId===p&&a.data)}catch{return []}};
+ const loadImage=asset=>new Promise((resolve,reject)=>{if(!asset){resolve(null);return}if(state.images.has(asset.id)){resolve(state.images.get(asset.id));return}const img=new Image();img.onload=()=>{state.images.set(asset.id,img);resolve(img)};img.onerror=reject;img.src=asset.data});
+ const fillSelect=(el,assets,placeholder)=>{const old=el.value;el.replaceChildren(new Option(placeholder,''));assets.forEach(a=>el.add(new Option(a.title||a.filename||'Untitled image',a.id)));if(assets.some(a=>a.id===old))el.value=old};
+ function refresh(){const assets=projectAssets();fillSelect($('motionBackground'),assets.filter(a=>a.category!=='character'),'Choose scene background (optional)');fillSelect($('motionCharacter'),assets.filter(a=>a.category==='character'),'Choose character image');const p=$('activeProject').value,e=$('episodeSelect').value,settings=read()[p+'|'+e];if(settings){$('motionBackground').value=settings.bg||'';$('motionCharacter').value=settings.char||'';$('motionPreset').value=settings.preset||'idle';$('motionDuration').value=settings.duration||6;$('motionScale').value=settings.scale||55;$('motionPosition').value=settings.position||'center'}draw(0)}
+ function imageById(id){return projectAssets().find(a=>a.id===id)}
+ function cover(img){const s=Math.max(canvas.width/img.width,canvas.height/img.height),w=img.width*s,h=img.height*s;ctx.drawImage(img,(canvas.width-w)/2,(canvas.height-h)/2,w,h)}
+ function draw(t){const bg=state.bg,char=state.char,w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);if(bg)cover(bg);else{const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#29313d');g.addColorStop(1,'#11131a');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);ctx.fillStyle='#d9ad55';ctx.globalAlpha=.22;for(let i=0;i<35;i++){ctx.beginPath();ctx.arc((i*137)%w,(i*71)%h,2+(i%3),0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
+ if(!char){ctx.fillStyle='#f6f3ed';ctx.font='26px system-ui';ctx.textAlign='center';ctx.fillText('Select a character image to begin',w/2,h/2);return}
+ const p=t,mode=$('motionPreset').value,scale=Number($('motionScale').value)/100,baseH=h*.78*scale,ratio=char.width/char.height,ch=baseH,cw=ch*ratio,place=$('motionPosition').value;let x=place==='left'?w*.25:place==='right'?w*.75:w*.5,y=h*.83-ch/2,rot=0,z=1,alpha=1;
+ if(mode==='walk'){x=w*.12+(w*.76)*p;y-=Math.abs(Math.sin(p*Math.PI*10))*9}
+ if(mode==='run'){x=w*.08+(w*.84)*p;y-=Math.abs(Math.sin(p*Math.PI*16))*22;rot=Math.sin(p*Math.PI*16)*.04}
+ if(mode==='enter'){x=w*.08+(w*.42)*Math.min(1,p*1.8);alpha=Math.min(1,p*3);z=.75+.25*Math.min(1,p*2)}
+ if(mode==='float'){y-=Math.sin(p*Math.PI*2)*38;rot=Math.sin(p*Math.PI*2)*.035}
+ if(mode==='shake'){x+=Math.sin(p*Math.PI*38)*9;rot=Math.sin(p*Math.PI*30)*.025}
+ if(mode==='zoom'){z=.65+.55*p}
+ if(mode==='turn'){rot=Math.sin(Math.min(1,p*2)*Math.PI)*.22}
+ if(mode==='idle'){y-=Math.sin(p*Math.PI*4)*5;z=1+Math.sin(p*Math.PI*4)*.012}
+ ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);ctx.rotate(rot);ctx.scale(z,z);ctx.drawImage(char,-cw/2,-ch/2,cw,ch);ctx.restore();
+ }
+ async function prepare(){const b=imageById($('motionBackground').value),c=imageById($('motionCharacter').value);state.bg=await loadImage(b);state.char=await loadImage(c);save()}
+ function frame(now){if(!state.playing)return;const duration=Math.max(2,Math.min(30,Number($('motionDuration').value)||6))*1000,p=Math.min(1,(now-state.start)/duration);draw(p);if(p>=1){state.playing=false;return}state.raf=requestAnimationFrame(frame)}
+ async function play(){stop();await prepare();if(!state.char){$('motionMessage').textContent='Choose a character image first.';return}state.playing=true;state.start=performance.now();state.raf=requestAnimationFrame(frame);$('motionMessage').textContent='Preview playing.'}
+ function stop(){state.playing=false;cancelAnimationFrame(state.raf);draw(0);if(state.recorder&&state.recorder.state==='recording')state.recorder.stop()}
+ $('motionPreview').addEventListener('click',play);$('motionStop').addEventListener('click',stop);
+ $('motionScale').addEventListener('input',()=>{$('motionScaleValue').textContent=$('motionScale').value+'%';draw(0);save()});
+ ['motionBackground','motionCharacter','motionPreset','motionDuration','motionPosition'].forEach(id=>$(id).addEventListener('change',async()=>{await prepare();draw(0)}));
+ $('motionExport').addEventListener('click',async()=>{try{await prepare();if(!state.char)throw Error('Choose a character image first.');if(!canvas.captureStream||!window.MediaRecorder)throw Error('This browser does not support local WebM recording.');const stream=canvas.captureStream(24),mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(x=>MediaRecorder.isTypeSupported(x));state.chunks=[];state.recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);state.recorder.ondataavailable=e=>{if(e.data.size)state.chunks.push(e.data)};state.recorder.onstop=()=>{const blob=new Blob(state.chunks,{type:state.recorder.mimeType||'video/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='last-crown-2d-animation.webm';a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);stream.getTracks().forEach(t=>t.stop());$('motionMessage').textContent='WebM clip exported. You can import it into Movie Theatre.'};state.recorder.start();state.playing=true;state.start=performance.now();const duration=Math.max(2,Math.min(30,Number($('motionDuration').value)||6))*1000;const tick=now=>{if(!state.playing)return;const p=Math.min(1,(now-state.start)/duration);draw(p);if(p>=1){state.playing=false;state.recorder.stop();return}state.raf=requestAnimationFrame(tick)};state.raf=requestAnimationFrame(tick);$('motionMessage').textContent='Recording animation locally…'}catch(err){$('motionMessage').textContent=err.message||'Could not export animation.'}});
+ $('activeProject').addEventListener('change',refresh);$('episodeSelect').addEventListener('change',refresh);$('saveAsset').addEventListener('click',()=>setTimeout(refresh,150));
+ refresh();window.addEventListener('beforeunload',stop);
+})();
 </script></body></html>
