@@ -142,17 +142,17 @@ document.getElementById('downloadScript').addEventListener('click',()=>{const p=
 
 let sceneDrafts=[];
 function splitScriptIntoDrafts(raw){
- const text=String(raw||'').replace(/\\r/g,'').trim();if(!text)return [];
- const lines=text.split('\\n'),starts=[],heading=/^(?:scene\\s+\\d+\\b.*|(?:INT\\.?|EXT\\.?)\\s+.+)$/i;
+ const text=String(raw||'').replace(/\r/g,'').trim();if(!text)return [];
+ const lines=text.split('\n'),starts=[],heading=/^(?:scene\s+\d+\b.*|(?:INT\.?|EXT\.?)\s+.+)$/i;
  lines.forEach((line,i)=>{if(heading.test(line.trim()))starts.push(i)});
  let chunks=[];
  if(starts.length){
   if(starts[0]>0&&lines.slice(0,starts[0]).join(' ').trim())chunks.push({heading:'Opening',body:lines.slice(0,starts[0]).join(' ').trim()});
   starts.forEach((at,i)=>{const end=starts[i+1]??lines.length,head=lines[at].trim(),body=lines.slice(at+1,end).join(' ').trim();chunks.push({heading:head,body:body||head})});
- }else chunks=text.split(/\\n\\s*\\n+/).map((body,i)=>({heading:'Draft scene '+(i+1),body:body.trim()})).filter(x=>x.body);
+ }else chunks=text.split(/\n\s*\n+/).map((body,i)=>({heading:'Draft scene '+(i+1),body:body.trim()})).filter(x=>x.body);
  return chunks.map((chunk,i)=>{
   const body=chunk.body,quoted=[...body.matchAll(/[“"]([^”"]{2,})[”"]/g)].map(m=>m[1]);
-  const title=(chunk.heading==='Opening'?'Opening':chunk.heading.replace(/^(?:scene\\s+\\d+\\s*[:—-]?|INT\\.?|EXT\\.?)/i,'').trim())||'Scene '+(i+1);
+  const title=(chunk.heading==='Opening'?'Opening':chunk.heading.replace(/^(?:scene\s+\d+\s*[:—-]?|INT\.?|EXT\.?)/i,'').trim())||'Scene '+(i+1);
   const lower=body.toLowerCase(),names=readStore(CHARACTER_KEY).filter(c=>c.projectId===activeProject()?.id&&c.name&&lower.includes(c.name.toLowerCase())).map(c=>c.name);
   return {selected:true,title:title.slice(0,150),location:'',time:'Day',characters:names.join(', '),action:body.slice(0,5900),framing:'Medium shot',movement:'Static',mood:'',duration:'12',dialogue:quoted.join(' / '),prompt:''};
  });
