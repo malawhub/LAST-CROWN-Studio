@@ -9,11 +9,11 @@ An English-language, anime-inspired 3D drama creation studio for LAST CROWN, des
 - Create character profiles with appearance descriptions and fixed visual-continuity rules.
 - Plan scenes per project and episode, including location, time, characters, action, camera framing/movement, mood, dialogue and visual prompts.
 - Edit or delete saved scenes and download a Markdown scene plan.
-- Export and import a JSON backup containing projects, episodes, scripts, character profiles and scenes.
+- Organise JPG, PNG and WebP character references, scene references and general visuals in a per-project asset library, with descriptions, tags and optional character/scene links.\n- Export and import a JSON backup containing projects, episodes, scripts, character profiles, scenes and image assets.
 
 Open `studio/index.html` in a browser. For a static host such as Cloudflare Pages, set the build output directory to `studio`.
 
-**Storage:** project data is stored in the current browser's local storage. It is not cloud sync. Export backups regularly; clearing browser data can remove local data. Import replaces the current project, episode, script, character and scene collections, so export a backup first.
+**Storage:** project data and image assets are stored in the current browser's local storage. This is not cloud sync. The asset library limits images to 800 KB each and approximately 3 MB total; large image collections can exceed browser storage limits. Export backups regularly; clearing browser data can remove local data. Import replaces the current project, episode, script, character, scene and asset collections, so export a backup first. Backups containing images can be large.
 
 ## Not implemented yet
 AI scene/shot generation, character image generation, 3D asset creation, image-to-video, narration, audio mixing, subtitle timing and MP4 rendering remain roadmap items. Scene planning is implemented as a manual production-planning tool; it does not generate images or video. No AI provider or video renderer is currently connected.
