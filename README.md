@@ -11,7 +11,7 @@ An English-language, anime-inspired 3D drama creation studio for LAST CROWN, des
 - Edit or delete saved scenes and download a Markdown scene plan.
 - Organise JPG, PNG and WebP character references, scene references and general visuals in a per-project asset library, with descriptions, tags and direct links to saved character profiles and scene records. Linked reference thumbnails appear alongside the matching character or scene.\n- Export and import a JSON backup containing projects, episodes, scripts, character profiles, scenes and image assets.
 - Export an offline production prompt pack containing character continuity sheets and prompts for all saved scenes.
-- Build multi-page comics from images in the Asset Library, add speech/thought/narration/sound text, edit panels, reorder panels within a page, apply 1–3 columns to a page, preview pages, control image crop/focus, choose page backgrounds and panel borders, and export a self-contained offline HTML comic for printing to PDF.
+- Build multi-page comics from images in the Asset Library, add speech/thought/narration/sound text, edit panels, drag-and-drop panels within a page (with arrow controls for touch screens), set each panel to quarter/third/half/two-thirds/full-page width on a 12-column grid, apply page design, preview pages, control image crop/focus, choose page backgrounds and panel borders, and export a self-contained offline HTML comic for printing to PDF.
 
 Open `studio/index.html` in a browser. For a static host such as Cloudflare Pages, set the build output directory to `studio`.
 
