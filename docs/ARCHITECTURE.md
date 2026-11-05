@@ -10,6 +10,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Scene plans can be edited, deleted and exported as Markdown.
 - Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
 - Offline production-pack export combines character continuity sheets and scene prompts into a downloadable text file.
+- Comic/storyboard builder arranges Asset Library images into numbered pages, supports speech/thought/caption/sound text overlays, panel editing and within-page reordering, per-page 1–3 column layouts, page preview and self-contained HTML export for browser printing to PDF.
 - No server, account system, AI provider, media generation or video renderer is connected yet.
 
 ## Planned modules and extensions
@@ -17,7 +18,8 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - `story`: outlines, scripts, dialogue, language and continuity checks.
 - `characters`: text character bible and fixed continuity notes are implemented; reusable image references and profile editing remain planned.
 - `scenes`: manual scene/shot planner is implemented with episode association, location, time, characters, action, framing, camera movement, mood, dialogue and visual prompt fields. Automated continuity checks remain planned.
-- `assets`: generated/imported images, audio, video and attribution/licence metadata.
+- `assets`: imported images and future audio/video assets with attribution/licence metadata.
+- `comic`: implemented local panel/page composition and offline HTML/PDF-print workflow; richer page templates, image crop controls and print-preview testing remain planned.
 - `generation`: provider adapters for text, image, speech and video, with explicit quota and availability reporting.
 - `editor`: timeline, tracks, subtitles, transitions and export settings.
 - `render`: optional FFmpeg-based assembly where supported by the device/runtime.
