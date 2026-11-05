@@ -25,12 +25,12 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - `render`: optional FFmpeg-based assembly where supported by the device/runtime.
 
 ## Recommended implementation order
-1. Add script revision history and richer episode metadata.
-2. Improve character management with image references, profile editing and stronger continuity controls.
-3. Add scene-to-character selection, continuity checks and prompt templates (basic local character and scene prompt templates are now implemented).
-4. Asset library and provider-neutral generation adapters (asset library is implemented; provider adapters remain planned).
-5. Narration, dialogue and subtitle timing.
-6. Timeline and MP4 assembly with tested codecs and device limits.
+1. Complete the episode production handoff and validate scene/character continuity (the first handoff export and readiness checks are now implemented).
+2. Add deterministic, offline script-to-scene drafting assistance with user review; do not claim AI understanding where no local model is running.
+3. Add local audio recording/import, narration organisation and subtitle timing.
+4. Build a lightweight timeline editor for imported images, clips and audio.
+5. Add tested FFmpeg-based MP4 assembly where the runtime/device supports it.
+6. Evaluate genuinely free/open-source visual production tools against Android and desktop constraints; do not add credit-metered generation.
 
 ## No-credit product rule
 Core workflows must not require credit-based generation APIs, paid AI subscriptions or hidden usage charges. Prefer offline tools and locally runnable open-source software. Remote providers, if ever added as optional integrations, must be clearly labelled with account, quota, regional, licence and cost requirements and must never be a required dependency.
