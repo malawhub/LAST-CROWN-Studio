@@ -10,7 +10,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Scene plans can be edited, deleted and exported as Markdown.
 - Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
 - Offline production-pack export combines character continuity sheets and scene prompts into a downloadable text file.
-- Comic/storyboard builder arranges Asset Library images into numbered pages, supports speech/thought/caption/sound text overlays, panel editing and within-page reordering, per-page 1–3 column layouts, page preview, image fit/crop and focal positioning, page background themes, panel border styles, and self-contained HTML export with print colour preservation for PDF output.
+- Comic/storyboard builder arranges Asset Library images into numbered pages, supports speech/thought/caption/sound text overlays, panel editing, within-page drag-and-drop and touch-friendly arrow reordering, per-panel 12-column width spans, page preview, image fit/crop and focal positioning, page background themes, panel border styles, and self-contained HTML export with print colour preservation for PDF output.
 - No server, account system, AI provider, media generation or video renderer is connected yet.
 
 ## Planned modules and extensions
