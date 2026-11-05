@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#09090b"><meta name="description" content="LAST CROWN Studio — plan stories, build scenes and organise productions.">
+<meta name="theme-color" content="#09090b"><link rel="manifest" href="./manifest.webmanifest"><meta name="description" content="LAST CROWN Studio — plan stories, build scenes and organise productions.">
 <title>LAST CROWN Studio</title>
 <style>
 :root{color-scheme:dark;--bg:#09090b;--panel:#141418;--panel2:#1b1b21;--line:#303039;--gold:#d9ad55;--muted:#a3a3ad;--white:#f6f3ed}
@@ -337,4 +337,6 @@ document.getElementById('importBtn').addEventListener('click',()=>document.getEl
 document.getElementById('backupFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());if(data.format!=='last-crown-studio-backup-v1'||!Array.isArray(data.projects))throw Error('This is not a valid Studio backup.');if(!data.projects.every(p=>p&&typeof p.id==='string'&&typeof p.title==='string'&&typeof p.idea==='string'))throw Error('Backup contains invalid project records.');localStorage.setItem(KEY,JSON.stringify(data.projects));localStorage.setItem(SCRIPT_KEY,JSON.stringify(Array.isArray(data.scripts)?data.scripts:[]));localStorage.setItem(CHARACTER_KEY,JSON.stringify(Array.isArray(data.characters)?data.characters:[]));localStorage.setItem(SCENE_KEY,JSON.stringify(Array.isArray(data.scenes)?data.scenes:[]));localStorage.setItem(EPISODE_KEY,JSON.stringify(Array.isArray(data.episodes)?data.episodes:[]));localStorage.setItem(ASSET_KEY,JSON.stringify(Array.isArray(data.assets)?data.assets:[]));localStorage.setItem(COMIC_KEY,JSON.stringify(Array.isArray(data.comicPanels)?data.comicPanels:[]));localStorage.setItem(SUBTITLE_KEY,JSON.stringify(Array.isArray(data.subtitles)?data.subtitles:[]));localStorage.setItem(TIMELINE_KEY,JSON.stringify(Array.isArray(data.timeline)?data.timeline:[]));migrateEpisodes();migrateLegacyScenes();render();document.getElementById('message').textContent='Backup imported.';refreshComicAssets()}catch(err){document.getElementById('message').textContent=err.message}e.target.value=''});
 migrateEpisodes();
 render();
+
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').then(()=>{const status=document.getElementById('offlineStatus');if(status){const update=()=>status.textContent=navigator.onLine?'Offline mode ready':'Offline mode active';update();window.addEventListener('online',update);window.addEventListener('offline',update)}}).catch(()=>{const status=document.getElementById('offlineStatus');if(status)status.textContent='Offline install unavailable in this browser'})})}
 </script></body></html>
