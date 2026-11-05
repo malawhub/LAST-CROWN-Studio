@@ -143,7 +143,7 @@ function makeCharacterPrompt(c,p){return [
 'Show a clear, recognisable full-body character, neutral confident standing pose, face clearly visible, uncluttered plain background, professional character concept art, consistent proportions, readable clothing details, balanced studio lighting.',
 'Do not add text, labels, watermarks, extra people, alternate outfits, age changes, hairstyle changes or facial changes. Do not contradict the supplied appearance or continuity notes.',
 'Output: a clean character reference image suitable for reuse as an image reference in later scenes.'
-].join('\\n\\n')}
+].join('\n\n')}
 function makeScenePrompt(scene,p){const names=(scene.characters||'').split(',').map(x=>x.trim()).filter(Boolean),chars=readStore(CHARACTER_KEY).filter(c=>c.projectId===p.id&&names.some(n=>n.toLowerCase()===c.name.toLowerCase()));const continuity=chars.map(c=>c.name+': '+c.look+' Fixed continuity: '+(c.continuity||c.look)).join('\\n');return [
 'SCENE IMAGE PROMPT — STORY CONTINUITY',
 'Project: '+p.title+'. Episode: '+(scene.episode||'')+'. Visual style: '+(p.style||'cinematic realism')+'. Genre: '+(p.genre||'drama')+'. Language context: '+(p.language||'English')+'.',
