@@ -15,6 +15,8 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Comic/storyboard builder arranges Asset Library images into numbered pages, supports speech/thought/caption/sound text overlays, panel editing, within-page drag-and-drop and touch-friendly arrow reordering, per-panel 12-column width spans, page preview, image fit/crop and focal positioning, page background themes, panel border styles, and self-contained HTML export with print colour preservation for PDF output.
 - No server, account system, AI provider or generative media service is connected. Browser-native video rendering is implemented as a basic local export path.
 
+- Offline app shell: `studio/service-worker.js` caches the Studio entry page, manifest and Termux converter script on the first successful HTTPS visit. The web app manifest supports installation to the Android home screen. Once cached and installed, the static app shell and browser-local workflows can open without a network connection. The first cache fill and install still require internet. Local MP4 conversion is performed by the previously installed Termux FFmpeg package; the conversion itself is offline. Direct browser MP4 encoding is not guaranteed.
+
 ## Planned modules and extensions
 - `projects`: project metadata, episode records, drafts and version history.
 - `story`: outlines, scripts, dialogue, language and continuity checks.
