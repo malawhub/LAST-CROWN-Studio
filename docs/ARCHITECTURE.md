@@ -10,11 +10,11 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Scene plans can be edited, deleted and exported as Markdown.
 - No server, account system, AI provider, media generation or video renderer is connected yet.
 
-## Proposed modules
+## Planned modules and extensions
 - `projects`: project metadata, episode records, drafts and version history.
 - `story`: outlines, scripts, dialogue, language and continuity checks.
-- `characters`: character bible, appearance descriptions and reference assets.
-- `scenes`: locations, shot lists, camera framing, lighting and scene continuity.
+- `characters`: basic text character bible is implemented; reusable image references remain planned.
+- `scenes`: manual scene/shot planner is implemented with episode label, location, time, characters, action, framing, camera movement, mood, dialogue and visual prompt fields. Automated continuity checks remain planned.
 - `assets`: generated/imported images, audio, video and attribution/licence metadata.
 - `generation`: provider adapters for text, image, speech and video, with explicit quota and availability reporting.
 - `editor`: timeline, tracks, subtitles, transitions and export settings.
