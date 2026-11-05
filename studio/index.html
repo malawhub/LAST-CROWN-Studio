@@ -338,5 +338,5 @@ document.getElementById('backupFile').addEventListener('change',async e=>{const 
 migrateEpisodes();
 render();
 
-if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').then(()=>{const status=document.getElementById('offlineStatus');if(status){const update=()=>status.textContent=navigator.onLine?'Offline mode ready':'Offline mode active';update();window.addEventListener('online',update);window.addEventListener('offline',update)}}).catch(()=>{const status=document.getElementById('offlineStatus');if(status)status.textContent='Offline install unavailable in this browser'})})}
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>{navigator.serviceWorker.register('./service-worker.js').then(()=>navigator.serviceWorker.ready).then(()=>{const status=document.getElementById('offlineStatus');if(status){const update=()=>status.textContent=navigator.onLine?'Offline files cached':'Offline mode active';update();window.addEventListener('online',update);window.addEventListener('offline',update)}}).catch(()=>{const status=document.getElementById('offlineStatus');if(status)status.textContent='Offline install unavailable in this browser'})})}
 </script></body></html>
