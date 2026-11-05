@@ -134,7 +134,6 @@ document.getElementById('clearScene').addEventListener('click',clearSceneForm);
 document.getElementById('downloadScenes').addEventListener('click',()=>{const p=activeProject(),scenes=readStore(SCENE_KEY).filter(x=>p&&x.projectId===p.id&&(!activeEpisodeId||x.episodeId===activeEpisodeId)).sort((a,b)=>a.order-b.order);if(!p||!scenes.length){document.getElementById('sceneMessage').textContent='Select a project with saved scenes first.';return}const lines=['# '+p.title+' — Scene Plan','',...scenes.flatMap(x=>['## Scene '+x.order+': '+x.title,'Episode: '+x.episode,'Location: '+x.location,'Time: '+x.time,'Characters: '+x.characters,'Action: '+x.action,'Shot: '+x.framing,'Camera movement: '+x.movement,'Lighting / mood: '+x.mood,'Estimated duration: '+(x.duration||'Not set')+' seconds','Dialogue / narration: '+x.dialogue,'Visual prompt: '+x.prompt,''])];const a=document.createElement('a');const url=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/markdown;charset=utf-8'}));a.href=url;a.download=p.title.replace(/[^a-z0-9_-]/gi,'_')+'-scene-plan.md';a.click();URL.revokeObjectURL(url)});
 
 
-function promptProjectStyle(){const p=activeProject();return p?[p.style,p.genre,p.language].filter(Boolean).join(', '):'cinematic visual storytelling'}
 function makeCharacterPrompt(c,p){return [
 'CHARACTER REFERENCE — CONSISTENT MASTER DESIGN',
 'Create one original character design sheet for a story production. '+(p?'Project: '+p.title+'. ':'')+'Visual direction: '+(p?.style||'cinematic realism')+'. Genre: '+(p?.genre||'drama')+'.',
