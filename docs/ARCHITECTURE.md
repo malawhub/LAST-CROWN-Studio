@@ -7,6 +7,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Static browser application in `studio/index.html`.
 - Local project creation, listing, JSON export and import.\n- Per-project asset library for JPG, PNG and WebP images, with character/scene/general categories, labels, descriptions, tags, preview and delete. Character and scene assets can be linked by record ID and previewed beside the corresponding character or scene. Images are embedded as data URLs in local storage and included in JSON backups.
 - Multiple episode records per project, separate episode scripts, character profiles with visual-continuity notes, and episode-linked scene/shot records stored in browser local storage.
+- The offline script-to-scene drafter detects explicit `SCENE` / `INT.` / `EXT.` headings or falls back to paragraph-sized candidates. Users can edit and select candidates before saving them to the episode's scene planner; simple character-name matching uses the local Character Bible. This is deterministic parsing, not AI comprehension.
 - Scene plans can be edited, deleted and exported as Markdown. A selected episode can also be exported as a production handoff pack combining its script, scene breakdown, character bible, linked visual references, runtime estimate and missing-item checklist.
 - Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
 - Offline production-pack export combines character continuity sheets and scene prompts into a downloadable text file.
@@ -26,11 +27,11 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 
 ## Recommended implementation order
 1. Complete the episode production handoff and validate scene/character continuity (the first handoff export and readiness checks are now implemented).
-2. Add deterministic, offline script-to-scene drafting assistance with user review; do not claim AI understanding where no local model is running.
-3. Add local audio recording/import, narration organisation and subtitle timing.
-4. Build a lightweight timeline editor for imported images, clips and audio.
-5. Add tested FFmpeg-based MP4 assembly where the runtime/device supports it.
-6. Evaluate genuinely free/open-source visual production tools against Android and desktop constraints; do not add credit-metered generation.
+2. Add local audio recording/import, narration organisation and subtitle timing.
+3. Build a lightweight timeline editor for imported images, clips and audio.
+4. Add tested FFmpeg-based MP4 assembly where the runtime/device supports it.
+5. Evaluate genuinely free/open-source visual production tools against Android and desktop constraints; do not add credit-metered generation.
+
 
 ## No-credit product rule
 Core workflows must not require credit-based generation APIs, paid AI subscriptions or hidden usage charges. Prefer offline tools and locally runnable open-source software. Remote providers, if ever added as optional integrations, must be clearly labelled with account, quota, regional, licence and cost requirements and must never be a required dependency.
