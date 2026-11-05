@@ -5,11 +5,12 @@ An English-language, anime-inspired 3D drama creation studio for LAST CROWN, des
 ## Current browser foundation
 - Create projects for LAST CROWN or original stories.
 - Set language, genre and visual direction.
+- Choose a project-wide visual direction: realistic 3D cinematic, stylised 3D, 2D anime, 3D anime, cinematic live-action realism, hand-drawn 2D, stop-motion, comic/graphic novel or hybrid mixed media. The selected direction is included in character and scene prompt guidance; it is a production brief, not a built-in renderer.
 - Create and manage multiple episodes per project, each with its own saved script.
 - Build a project-specific World Bible with 18 starting presets spanning ancient civilisations, African kingdoms, medieval and renaissance settings, colonial and traditional societies, industrial history, modern settings, near-future and cyberpunk cities, space-age worlds, post-apocalyptic settings, fantasy, mythology and steampunk. Customise era, geography, governance, settlements, architecture, interiors, landscape, climate, technology, transport, clothing, customs, food, languages, beliefs, economy, magic/science rules, conflict, palette, atmosphere and continuity rules. World settings are included in scene prompts, production packs and JSON backups.
 - Create character profiles with appearance descriptions and fixed visual-continuity rules.
 - Draft editable scene candidates from an episode script using a local rule-based parser; recognise explicit scene headings or propose paragraph-sized candidates, then select, edit and save approved scenes to the episode planner. This is deterministic assistance, not AI story understanding.
-- Plan scenes per project and episode, including location, time, characters, action, camera framing/movement, mood, dialogue and visual prompts.
+- Plan scenes per project and episode, including location, time, characters, action, shot framing, camera movement, lens choice, lighting/mood, character performance/animation movement, environment motion/effects, dialogue and visual prompts. The prompt builder adapts guidance to the selected visual style and preserves character continuity.
 - Edit or delete saved scenes and download a Markdown scene plan.
 - Organise JPG, PNG and WebP character references, scene references and general visuals in a per-project asset library, with descriptions, tags and direct links to saved character profiles and scene records. Linked reference thumbnails appear alongside the matching character or scene.
 - Export and import a JSON backup containing projects, episodes, scripts, character profiles, scenes and image assets.
