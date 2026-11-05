@@ -28,3 +28,6 @@ Keep the interface lightweight. Heavy image/video models may need optional remot
 
 ## Local Python reference
 The previously supplied `dark_crown_app.py` is a separate local application reference. It has not been merged into this repository; integration requires reconciling its runtime, model and storage paths.
+
+
+The comic page preview also includes an accessible per-panel width slider. Drag its handle to resize a panel from 3/12 to 12/12 page width; the new size saves locally and is retained in HTML exports and JSON backups. On narrow screens, the same size is scaled to the six-column mobile grid.
