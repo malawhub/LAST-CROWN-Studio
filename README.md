@@ -9,7 +9,7 @@ An English-language, anime-inspired 3D drama creation studio for LAST CROWN, des
 - Create character profiles with appearance descriptions and fixed visual-continuity rules.
 - Plan scenes per project and episode, including location, time, characters, action, camera framing/movement, mood, dialogue and visual prompts.
 - Edit or delete saved scenes and download a Markdown scene plan.
-- Organise JPG, PNG and WebP character references, scene references and general visuals in a per-project asset library, with descriptions, tags and optional character/scene links.\n- Export and import a JSON backup containing projects, episodes, scripts, character profiles, scenes and image assets.
+- Organise JPG, PNG and WebP character references, scene references and general visuals in a per-project asset library, with descriptions, tags and direct links to saved character profiles and scene records. Linked reference thumbnails appear alongside the matching character or scene.\n- Export and import a JSON backup containing projects, episodes, scripts, character profiles, scenes and image assets.
 
 Open `studio/index.html` in a browser. For a static host such as Cloudflare Pages, set the build output directory to `studio`.
 
