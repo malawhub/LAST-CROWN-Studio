@@ -3,6 +3,7 @@
 An English-language, anime-inspired 3D drama creation studio for LAST CROWN, designed to grow into a general-purpose story-to-screen workspace.
 
 ## Current browser foundation
+- The beginner-first home screen provides five clear entry points — Create a movie, Write a story, Characters, Animate and My movies — with one-tap workspace navigation, a return-home control and a separate advanced-tools view. The same interface is synchronised into the Android app's bundled assets.
 - Create projects for LAST CROWN or original stories.
 - Set language, genre and visual direction.
 - Choose a project-wide visual direction: realistic 3D cinematic, stylised 3D, 2D anime, 3D anime, cinematic live-action realism, hand-drawn 2D, stop-motion, comic/graphic novel or hybrid mixed media. The selected direction is included in character and scene prompt guidance; it is a production brief, not a built-in renderer.
