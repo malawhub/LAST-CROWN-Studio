@@ -41,12 +41,32 @@ button{border:0;border-radius:9px;padding:11px 16px;background:var(--gold);color
 <div class="stage"><div class="num">5</div><div><strong>Sound & final edit</strong><div class="muted">Voices, music, subtitles and MP4 export</div><div class="status">Not implemented yet</div></div></div>
 <p class="muted">Only project saving is active in this foundation build. Production tools will be added and tested before being labelled ready.</p>
 </section>
+<section class="panel wide"><h2>Story development workspace</h2>
+<p class="muted">Select a project, write its episode script and keep a reusable character bible. Changes are saved locally in this browser.</p>
+<div class="field"><label for="activeProject">Active project</label><select id="activeProject"><option value="">Choose a saved project</option></select></div>
+<div class="field"><label for="episodeTitle">Episode / script title</label><input id="episodeTitle" maxlength="160" placeholder="Episode 1 — The Beginning"></div>
+<div class="field"><label for="scriptText">Story script</label><textarea id="scriptText" style="min-height:240px" placeholder="Write or paste the complete story here..."></textarea></div>
+<div class="actions"><button type="button" id="saveScript">Save script</button><button type="button" class="secondary" id="downloadScript">Download script</button></div>
+<p id="scriptMessage" class="muted" role="status" aria-live="polite"></p>
+<div class="divider"></div>
+<h2>Character bible</h2>
+<div class="field"><label for="characterName">Character name</label><input id="characterName" maxlength="100" placeholder="Character name"></div>
+<div class="field"><label for="characterRole">Role in the story</label><input id="characterRole" maxlength="160" placeholder="Main character, guardian, antagonist..."></div>
+<div class="field"><label for="characterLook">Appearance and continuity notes</label><textarea id="characterLook" maxlength="3000" placeholder="Age, face, hair, clothing, build, distinguishing features and details that must remain consistent..."></textarea></div>
+<div class="actions"><button type="button" id="saveCharacter">Save character</button></div>
+<div id="characterList" class="empty">Choose a project to manage its characters.</div>
+</section>
 <section class="panel wide"><h2>Your saved projects</h2><div id="projects" class="empty">No projects saved in this browser yet.</div><div class="actions"><button class="secondary" id="exportBtn" type="button">Export project backup</button><button class="secondary" id="importBtn" type="button">Import backup</button><input id="backupFile" type="file" accept="application/json" hidden></div></section>
 </div>
 </main><footer>LAST CROWN STUDIO · Local-first project workspace</footer>
 <script>
-const KEY='last-crown-studio.projects.v1';
+const KEY='last-crown-studio.projects.v1';\nconst SCRIPT_KEY='last-crown-studio.scripts.v1';\nconst CHARACTER_KEY='last-crown-studio.characters.v1';\nlet currentScriptId='';
 function readProjects(){try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
+function readStore(key){try{const v=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
+function activeProject(){return readProjects().find(p=>p.id===document.getElementById('activeProject').value)}
+function refreshWorkspace(){const select=document.getElementById('activeProject'),old=select.value;select.replaceChildren(new Option('Choose a saved project',''));readProjects().forEach(p=>select.add(new Option(p.title,p.id)));if(readProjects().some(p=>p.id===old))select.value=old;loadWorkspace()}
+function loadWorkspace(){const p=activeProject();const scripts=readStore(SCRIPT_KEY);const script=p?scripts.find(x=>x.projectId===p.id):null;currentScriptId=script?script.id:'';document.getElementById('episodeTitle').value=script?script.title:'';document.getElementById('scriptText').value=script?script.body:'';renderCharacters()}
+function renderCharacters(){const box=document.getElementById('characterList');box.replaceChildren();const p=activeProject();if(!p){box.textContent='Choose a project to manage its characters.';box.className='empty';return}const chars=readStore(CHARACTER_KEY).filter(c=>c.projectId===p.id);if(!chars.length){box.textContent='No characters saved for this project yet.';box.className='empty';return}box.className='';chars.forEach(c=>{const el=document.createElement('div');el.className='project';const name=document.createElement('strong');name.textContent=c.name;const role=document.createElement('div');role.className='muted';role.textContent=c.role;const look=document.createElement('p');look.className='muted';look.textContent=c.look;el.append(name,role,look);box.append(el)})}
 function render(){const box=document.getElementById('projects'),items=readProjects();box.replaceChildren();if(!items.length){box.textContent='No projects saved in this browser yet.';box.className='empty';return}box.className='';items.slice().reverse().forEach(p=>{const el=document.createElement('div');el.className='project';const title=document.createElement('strong');title.textContent=p.title;const meta=document.createElement('div');meta.className='muted';meta.textContent=[p.collection,p.language,p.style,p.genre,new Date(p.created).toLocaleString()].join(' · ');const idea=document.createElement('p');idea.className='muted';idea.textContent=p.idea;el.append(title,meta,idea);box.append(el)})}
 document.getElementById('projectForm').addEventListener('submit',e=>{e.preventDefault();const p={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),title:document.getElementById('title').value.trim(),idea:document.getElementById('idea').value.trim(),collection:document.getElementById('kind').value,language:document.getElementById('language').value,style:document.getElementById('style').value,genre:document.getElementById('genre').value,created:new Date().toISOString()};if(!p.title||!p.idea)return;const all=readProjects();all.push(p);localStorage.setItem(KEY,JSON.stringify(all));document.getElementById('message').textContent='Project saved on this device.';e.target.reset();render()});
 document.getElementById('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({format:'last-crown-studio-backup-v1',projects:readProjects()},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='last-crown-studio-backup.json';a.click();URL.revokeObjectURL(a.href)});
