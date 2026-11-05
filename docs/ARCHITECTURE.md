@@ -9,6 +9,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Multiple episode records per project, separate episode scripts, character profiles with visual-continuity notes, and episode-linked scene/shot records stored in browser local storage.
 - Scene plans can be edited, deleted and exported as Markdown.
 - Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
+- Offline production-pack export combines character continuity sheets and scene prompts into a downloadable text file.
 - No server, account system, AI provider, media generation or video renderer is connected yet.
 
 ## Planned modules and extensions
@@ -28,6 +29,9 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 4. Asset library and provider-neutral generation adapters (asset library is implemented; provider adapters remain planned).
 5. Narration, dialogue and subtitle timing.
 6. Timeline and MP4 assembly with tested codecs and device limits.
+
+## No-credit product rule
+Core workflows must not require credit-based generation APIs, paid AI subscriptions or hidden usage charges. Prefer offline tools and locally runnable open-source software. Remote providers, if ever added as optional integrations, must be clearly labelled with account, quota, regional, licence and cost requirements and must never be a required dependency.
 
 ## Device constraints
 The target phone is an Android device with limited compute and storage compared with a desktop GPU. Keep the local interface lightweight. Treat large diffusion and video models as remote/optional workloads unless benchmarks prove they can run acceptably on-device. Never promise unlimited free remote generation.
