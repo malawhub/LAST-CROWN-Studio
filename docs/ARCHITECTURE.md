@@ -44,3 +44,7 @@ The target phone is an Android device with limited compute and storage compared 
 - Keep project backups portable.
 - Store provider credentials only in a secure server-side secret store if a backend is added; never embed API keys in browser code.
 - Clearly distinguish implemented features from planned features.
+
+
+### Interactive panel resizing
+The comic preview exposes a native range control on each panel. Input updates the panel grid span immediately; change persists the selected 3–12 column span in the comic record. The mobile preview maps the 12-column span to a six-column grid. Export HTML uses the stored 12-column span. The native range input supplies keyboard and touch accessibility alongside drag-and-drop and arrow reordering.
