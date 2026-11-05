@@ -6,6 +6,7 @@ An English-language, anime-inspired 3D drama creation studio for LAST CROWN, des
 - Create projects for LAST CROWN or original stories.
 - Set language, genre and visual direction.
 - Create and manage multiple episodes per project, each with its own saved script.
+- Build a project-specific World Bible with 18 starting presets spanning ancient civilisations, African kingdoms, medieval and renaissance settings, colonial and traditional societies, industrial history, modern settings, near-future and cyberpunk cities, space-age worlds, post-apocalyptic settings, fantasy, mythology and steampunk. Customise era, geography, governance, settlements, architecture, interiors, landscape, climate, technology, transport, clothing, customs, food, languages, beliefs, economy, magic/science rules, conflict, palette, atmosphere and continuity rules. World settings are included in scene prompts, production packs and JSON backups.
 - Create character profiles with appearance descriptions and fixed visual-continuity rules.
 - Draft editable scene candidates from an episode script using a local rule-based parser; recognise explicit scene headings or propose paragraph-sized candidates, then select, edit and save approved scenes to the episode planner. This is deterministic assistance, not AI story understanding.
 - Plan scenes per project and episode, including location, time, characters, action, camera framing/movement, mood, dialogue and visual prompts.
