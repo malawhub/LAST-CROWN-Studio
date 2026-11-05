@@ -57,6 +57,12 @@ button{border:0;border-radius:9px;padding:11px 16px;background:var(--gold);color
 <div class="actions"><button type="button" id="saveScript">Save script</button><button type="button" class="secondary" id="downloadScript">Download script</button></div>
 <p id="scriptMessage" class="muted" role="status" aria-live="polite"></p>
 <div class="divider"></div>
+<h2>Offline script-to-scene drafter</h2>
+<p class="muted">Create editable scene suggestions from the current episode script. This local rule-based assistant recognises explicit scene headings or proposes paragraph-sized candidates. Review every candidate before saving.</p>
+<div class="actions"><button type="button" id="draftScenes">Draft scenes from script</button><button type="button" class="secondary" id="clearSceneDrafts">Clear draft preview</button><button type="button" id="saveSelectedDrafts" disabled>Save selected scenes</button></div>
+<p id="draftMessage" class="muted" role="status" aria-live="polite"></p>
+<div id="sceneDraftList" class="empty">Save or paste an episode script, then draft scenes for review.</div>
+<div class="divider"></div>
 <h2>Character bible</h2>
 <div class="field"><label for="characterName">Character name</label><input id="characterName" maxlength="100" placeholder="Character name"></div>
 <div class="field"><label for="characterRole">Role in the story</label><input id="characterRole" maxlength="160" placeholder="Main character, guardian, antagonist..."></div>
@@ -133,6 +139,62 @@ document.getElementById('createEpisode').addEventListener('click',()=>{const p=a
 document.getElementById('deleteEpisode').addEventListener('click',()=>{const ep=projectEpisodes().find(x=>x.id===activeEpisodeId),msg=document.getElementById('episodeMessage');if(!ep){msg.textContent='Choose an episode first.';return}if(!confirm('Delete this episode, its script and its scenes?'))return;localStorage.setItem(EPISODE_KEY,JSON.stringify(readStore(EPISODE_KEY).filter(x=>x.id!==ep.id)));localStorage.setItem(SCRIPT_KEY,JSON.stringify(readStore(SCRIPT_KEY).filter(x=>x.episodeId!==ep.id)));localStorage.setItem(SCENE_KEY,JSON.stringify(readStore(SCENE_KEY).filter(x=>x.episodeId!==ep.id)));refreshEpisodes();msg.textContent='Episode and linked script/scenes deleted.'});
 document.getElementById('saveScript').addEventListener('click',()=>{const p=activeProject(),msg=document.getElementById('scriptMessage');if(!p){msg.textContent='Save or select a project first.';return}const title=document.getElementById('episodeTitle').value.trim(),body=document.getElementById('scriptText').value.trim();if(!activeEpisodeId){msg.textContent='Create or select an episode first.';return}if(!title||!body){msg.textContent='Enter an episode title and script.';return}const eps=readStore(EPISODE_KEY),ep=eps.find(x=>x.id===activeEpisodeId);if(!ep){msg.textContent='Selected episode no longer exists.';return}ep.title=title;localStorage.setItem(EPISODE_KEY,JSON.stringify(eps));const all=readStore(SCRIPT_KEY);let item=all.find(x=>x.episodeId===activeEpisodeId);if(item){item.title=title;item.body=body;item.updated=new Date().toISOString()}else{item={id:String(Date.now()),projectId:p.id,episodeId:activeEpisodeId,title,body,updated:new Date().toISOString()};all.push(item)}localStorage.setItem(SCRIPT_KEY,JSON.stringify(all));refreshEpisodes(activeEpisodeId);msg.textContent='Episode script saved on this device.'});
 document.getElementById('downloadScript').addEventListener('click',()=>{const p=activeProject(),body=document.getElementById('scriptText').value.trim();if(!p||!body||!activeEpisodeId){document.getElementById('scriptMessage').textContent='Select an episode and enter a script first.';return}const blob=new Blob([document.getElementById('episodeTitle').value+'\\n\\n'+body],{type:'text/plain;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(document.getElementById('episodeTitle').value||p.title).replace(/[^a-z0-9_-]/gi,'_')+'.txt';a.click();URL.revokeObjectURL(a.href)});
+
+let sceneDrafts=[];
+function splitScriptIntoDrafts(raw){
+ const text=String(raw||'').replace(/\\r/g,'').trim();if(!text)return [];
+ const lines=text.split('\\n'),starts=[],heading=/^(?:scene\\s+\\d+\\b.*|(?:INT\\.?|EXT\\.?)\\s+.+)$/i;
+ lines.forEach((line,i)=>{if(heading.test(line.trim()))starts.push(i)});
+ let chunks=[];
+ if(starts.length){
+  if(starts[0]>0&&lines.slice(0,starts[0]).join(' ').trim())chunks.push({heading:'Opening',body:lines.slice(0,starts[0]).join(' ').trim()});
+  starts.forEach((at,i)=>{const end=starts[i+1]??lines.length,head=lines[at].trim(),body=lines.slice(at+1,end).join(' ').trim();chunks.push({heading:head,body:body||head})});
+ }else chunks=text.split(/\\n\\s*\\n+/).map((body,i)=>({heading:'Draft scene '+(i+1),body:body.trim()})).filter(x=>x.body);
+ return chunks.map((chunk,i)=>{
+  const body=chunk.body,quoted=[...body.matchAll(/[“"]([^”"]{2,})[”"]/g)].map(m=>m[1]);
+  const title=(chunk.heading==='Opening'?'Opening':chunk.heading.replace(/^(?:scene\\s+\\d+\\s*[:—-]?|INT\\.?|EXT\\.?)/i,'').trim())||'Scene '+(i+1);
+  const lower=body.toLowerCase(),names=readStore(CHARACTER_KEY).filter(c=>c.projectId===activeProject()?.id&&c.name&&lower.includes(c.name.toLowerCase())).map(c=>c.name);
+  return {selected:true,title:title.slice(0,150),location:'',time:'Day',characters:names.join(', '),action:body.slice(0,5900),framing:'Medium shot',movement:'Static',mood:'',duration:'12',dialogue:quoted.join(' / '),prompt:''};
+ });
+}
+function draftField(label,value,onInput,tag='input'){
+ const wrap=document.createElement('label');wrap.className='field';const caption=document.createElement('span');caption.textContent=label;const el=document.createElement(tag);el.value=value??'';if(tag==='textarea')el.rows=3;el.addEventListener('input',()=>onInput(el.value));wrap.append(caption,el);return wrap;
+}
+function renderSceneDrafts(){
+ const box=document.getElementById('sceneDraftList'),save=document.getElementById('saveSelectedDrafts');box.replaceChildren();
+ if(!sceneDrafts.length){box.className='empty';box.textContent='No draft scenes to review.';save.disabled=true;return}
+ box.className='';save.disabled=!sceneDrafts.some(x=>x.selected);
+ sceneDrafts.forEach((d,i)=>{
+  const card=document.createElement('article');card.className='project';const top=document.createElement('div');top.className='actions';
+  const check=document.createElement('input');check.type='checkbox';check.checked=d.selected;check.setAttribute('aria-label','Select scene '+(i+1));check.addEventListener('change',()=>{d.selected=check.checked;save.disabled=!sceneDrafts.some(x=>x.selected)});
+  const heading=document.createElement('strong');heading.textContent='Candidate '+(i+1)+' — review required';top.append(check,heading);
+  const grid=document.createElement('div');grid.className='grid';
+  grid.append(draftField('Scene title',d.title,v=>d.title=v),draftField('Location (edit if known)',d.location,v=>d.location=v),draftField('Characters (matched from Character Bible)',d.characters,v=>d.characters=v),draftField('Time of day',d.time,v=>d.time=v),draftField('Camera framing',d.framing,v=>d.framing=v),draftField('Camera movement',d.movement,v=>d.movement=v),draftField('Mood / lighting',d.mood,v=>d.mood=v),draftField('Estimated duration (seconds)',d.duration,v=>d.duration=v));
+  card.append(top,grid,draftField('Scene action (edit the suggested text)',d.action,v=>d.action=v,'textarea'),draftField('Dialogue / narration (quoted text extracted where possible)',d.dialogue,v=>d.dialogue=v,'textarea'),draftField('Visual prompt (optional; can be built later)',d.prompt,v=>d.prompt=v,'textarea'));box.append(card);
+ });
+}
+document.getElementById('draftScenes').addEventListener('click',()=>{
+ const p=activeProject(),script=document.getElementById('scriptText').value.trim(),msg=document.getElementById('draftMessage');
+ if(!p||!activeEpisodeId){msg.textContent='Select a project and episode first.';return}
+ if(!script){msg.textContent='Paste or write the episode script first.';return}
+ sceneDrafts=splitScriptIntoDrafts(script);renderSceneDrafts();
+ const explicit=/^(?:scene\\s+\\d+\\b.*|(?:INT\\.?|EXT\\.?)\\s+.+)$/im.test(script);
+ msg.textContent=sceneDrafts.length+' candidate scene(s) drafted locally. '+(explicit?'Scene headings were detected.':'No clear scene headings found; candidates are paragraph-sized and may not represent real scene changes.')+' Review and edit before saving.';
+});
+document.getElementById('clearSceneDrafts').addEventListener('click',()=>{sceneDrafts=[];renderSceneDrafts();document.getElementById('draftMessage').textContent='Draft preview cleared. No saved scenes were changed.'});
+document.getElementById('saveSelectedDrafts').addEventListener('click',()=>{
+ const p=activeProject(),ep=projectEpisodes().find(x=>x.id===activeEpisodeId),msg=document.getElementById('draftMessage');
+ if(!p||!ep){msg.textContent='Select a project and episode first.';return}
+ const selected=sceneDrafts.filter(x=>x.selected);if(!selected.length){msg.textContent='Select at least one candidate.';return}
+ const all=readStore(SCENE_KEY),existing=all.filter(x=>x.projectId===p.id&&x.episodeId===ep.id);
+ let next=Math.max(0,...existing.map(x=>Number(x.order)||0))+1,added=0,skipped=0;
+ selected.forEach(d=>{
+  if(existing.some(x=>x.title.trim().toLowerCase()===d.title.trim().toLowerCase()&&x.action.trim()===d.action.trim())){skipped++;return}
+  all.push({id:'scene-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),projectId:p.id,episodeId:ep.id,order:next++,episode:ep.title,title:d.title.trim()||'Untitled scene',location:d.location.trim(),time:d.time||'Day',characters:d.characters.trim(),action:d.action.trim(),framing:d.framing||'Medium shot',movement:d.movement||'Static',mood:d.mood.trim(),duration:d.duration,dialogue:d.dialogue.trim(),prompt:d.prompt.trim(),draftSource:'offline-script-drafter',reviewed:true,created:new Date().toISOString()});added++;
+ });
+ localStorage.setItem(SCENE_KEY,JSON.stringify(all));renderScenes();msg.textContent=added+' scene(s) saved to the selected episode.'+(skipped?' '+skipped+' duplicate(s) skipped.':'')+' You can edit each saved scene in the Scene Planner.';
+});
+
 document.getElementById('saveCharacter').addEventListener('click',()=>{const p=activeProject(),name=document.getElementById('characterName').value.trim(),role=document.getElementById('characterRole').value.trim(),look=document.getElementById('characterLook').value.trim(),continuity=document.getElementById('characterContinuity').value.trim(),msg=document.getElementById('scriptMessage');if(!p){msg.textContent='Select a project first.';return}if(!name||!look){msg.textContent='Enter a character name and appearance notes.';return}const all=readStore(CHARACTER_KEY);all.push({id:String(Date.now()),projectId:p.id,name,role,look,continuity,created:new Date().toISOString()});localStorage.setItem(CHARACTER_KEY,JSON.stringify(all));document.getElementById('characterName').value='';document.getElementById('characterRole').value='';document.getElementById('characterLook').value='';document.getElementById('characterContinuity').value='';msg.textContent='Character saved.';renderCharacters()});
 document.getElementById('saveScene').addEventListener('click',()=>{const p=activeProject(),msg=document.getElementById('sceneMessage');if(!p){msg.textContent='Select a project first.';return}if(!activeEpisodeId){msg.textContent='Create or select an episode first.';return}const title=document.getElementById('sceneTitle').value.trim(),action=document.getElementById('sceneAction').value.trim();if(!title||!action){msg.textContent='Enter a scene title and scene action.';return}const all=readStore(SCENE_KEY),existing=all.find(x=>x.id===editingSceneId),projectScenes=all.filter(x=>x.projectId===p.id&&x.episodeId===activeEpisodeId),item={id:existing?existing.id:String(Date.now()),projectId:p.id,episodeId:activeEpisodeId,order:existing?existing.order:Math.max(0,...projectScenes.map(x=>Number(x.order)||0))+1,episode:document.getElementById('sceneEpisode').value.trim()||'Unassigned episode',title,location:document.getElementById('sceneLocation').value.trim(),time:document.getElementById('sceneTime').value,characters:document.getElementById('sceneCharacters').value.trim(),action,framing:document.getElementById('shotFraming').value,movement:document.getElementById('shotMovement').value,mood:document.getElementById('sceneMood').value.trim(),duration:document.getElementById('sceneDuration').value,dialogue:document.getElementById('sceneDialogue').value.trim(),prompt:document.getElementById('scenePrompt').value.trim(),updated:new Date().toISOString()};if(existing)all[all.findIndex(x=>x.id===existing.id)]=item;else all.push(item);localStorage.setItem(SCENE_KEY,JSON.stringify(all));msg.textContent=(existing?'Scene updated.':'Scene '+item.order+' saved.')+' Saved on this device.';clearSceneForm();document.getElementById('sceneEpisode').value=(readStore(SCRIPT_KEY).find(x=>x.projectId===p.id)||{}).title||'';renderScenes()});
 document.getElementById('clearScene').addEventListener('click',clearSceneForm);
