@@ -11,7 +11,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Scene plans can be edited, deleted and exported as Markdown. A selected episode can also be exported as a production handoff pack combining its script, scene breakdown, character bible, linked visual references, runtime estimate and missing-item checklist.
 - Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
 - Offline production-pack export combines character continuity sheets and scene prompts into a downloadable text file.
-- Audio tools support microphone recording (when browser APIs and permission are available), audio-file import, clip classification and optional scene linking. Audio blobs are stored in IndexedDB rather than localStorage; clips can be played and downloaded individually. Subtitle cues are stored per episode in localStorage and exported as SRT; subtitle cues are included in JSON backups, audio blobs are not.
+- A lightweight per-episode timeline assembles existing scene, image, audio and subtitle records into editable local tracks. Start times and durations can be adjusted and items moved earlier/later; timeline metadata is stored in local storage and included in JSON backups. It does not render or encode video.\n- Audio tools support microphone recording (when browser APIs and permission are available), audio-file import, clip classification and optional scene linking. Audio blobs are stored in IndexedDB rather than localStorage; clips can be played and downloaded individually. Subtitle cues are stored per episode in localStorage and exported as SRT; subtitle cues are included in JSON backups, audio blobs are not.
 - Comic/storyboard builder arranges Asset Library images into numbered pages, supports speech/thought/caption/sound text overlays, panel editing, within-page drag-and-drop and touch-friendly arrow reordering, per-panel 12-column width spans, page preview, image fit/crop and focal positioning, page background themes, panel border styles, and self-contained HTML export with print colour preservation for PDF output.
 - No server, account system, AI provider, media generation, timeline editor or video renderer is connected yet.
 
@@ -28,7 +28,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 
 ## Recommended implementation order
 1. Complete the episode production handoff and validate scene/character continuity (the first handoff export and readiness checks are now implemented).
-2. Build a lightweight timeline editor for imported images, clips and audio.
+2. Validate timeline usability on Android, then add tested FFmpeg-based MP4 assembly where the runtime/device supports it.
 3. Add tested FFmpeg-based MP4 assembly where the runtime/device supports it.
 4. Evaluate genuinely free/open-source visual production tools against Android and desktop constraints; do not add credit-metered generation.
 
