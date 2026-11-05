@@ -1,3 +1,35 @@
+# Offline use on Android
+
+## Initial setup (internet required once)
+
+1. Deploy the `studio` folder to an HTTPS host such as Cloudflare Pages.
+2. Open the Studio in Chrome while online. Wait until the header says **Offline files cached**.
+3. From Chrome's menu, choose **Install app** or **Add to Home screen**.
+4. In Termux, install FFmpeg and enable storage access:
+
+```sh
+pkg update
+pkg install ffmpeg
+termux-setup-storage
+```
+
+5. Download the Termux converter script once while online.
+
+## After setup
+
+Turn on airplane mode and open the installed Studio. The service worker supplies the cached app shell. Project editing, local browser storage, asset handling, comics, audio tools, subtitles, timeline work and browser video rendering do not require a server connection. If the browser renders WebM, run the already-installed Termux FFmpeg converter to create MP4; conversion itself is local.
+
+## Important
+
+- Initial cache fill, installation and FFmpeg package installation need internet. Offline use is after this one-time setup.
+- Service workers require HTTPS or localhost. Opening the HTML file directly does not install the offline app.
+- Do not clear browser site data; that can erase locally stored projects. Export backups regularly.
+- Audio blobs in IndexedDB are not currently included in JSON backups; download important recordings separately.
+- Keep the Studio visible during rendering. Start with 640×360 at 15 fps on the Honor X6b.
+- MP4 encoding depends on the installed FFmpeg codec build. The script prefers H.264 and has a fallback.
+
+---
+
 # Android MP4 export and device test
 
 ## Convert a WebM export to MP4 locally
