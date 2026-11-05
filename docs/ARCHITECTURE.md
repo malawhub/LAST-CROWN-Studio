@@ -8,6 +8,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Local project creation, listing, JSON export and import.\n- Per-project asset library for JPG, PNG and WebP images, with character/scene/general categories, labels, descriptions, tags, preview and delete. Character and scene assets can be linked by record ID and previewed beside the corresponding character or scene. Images are embedded as data URLs in local storage and included in JSON backups.
 - Multiple episode records per project, separate episode scripts, character profiles with visual-continuity notes, and episode-linked scene/shot records stored in browser local storage.
 - Scene plans can be edited, deleted and exported as Markdown.
+- Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
 - No server, account system, AI provider, media generation or video renderer is connected yet.
 
 ## Planned modules and extensions
@@ -23,8 +24,8 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 ## Recommended implementation order
 1. Add script revision history and richer episode metadata.
 2. Improve character management with image references, profile editing and stronger continuity controls.
-3. Add scene-to-character selection, continuity checks and prompt templates.
-4. Asset library and provider-neutral generation adapters.
+3. Add scene-to-character selection, continuity checks and prompt templates (basic local character and scene prompt templates are now implemented).
+4. Asset library and provider-neutral generation adapters (asset library is implemented; provider adapters remain planned).
 5. Narration, dialogue and subtitle timing.
 6. Timeline and MP4 assembly with tested codecs and device limits.
 
