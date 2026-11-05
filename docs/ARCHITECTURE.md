@@ -6,6 +6,8 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 ## Current implementation
 - Static browser application in `studio/index.html`.
 - Local project creation, listing, JSON export and import.
+- One working episode script per project, character profiles and scene/shot records stored in browser local storage.
+- Scene plans can be edited, deleted and exported as Markdown.
 - No server, account system, AI provider, media generation or video renderer is connected yet.
 
 ## Proposed modules
@@ -19,13 +21,12 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - `render`: optional FFmpeg-based assembly where supported by the device/runtime.
 
 ## Recommended implementation order
-1. Project data model, editing and backup validation.
-2. Episode/script editor with autosave and revision history.
-3. Character bible and reusable visual references.
-4. Scene breakdown and shot planner.
-5. Asset library and provider-neutral generation adapters.
-6. Narration, dialogue and subtitle timing.
-7. Timeline and MP4 assembly with tested codecs and device limits.
+1. Expand the episode model to support multiple episodes and script revision history.
+2. Improve character management with image references and stronger continuity controls.
+3. Add scene-to-character selection, continuity checks and prompt templates.
+4. Asset library and provider-neutral generation adapters.
+5. Narration, dialogue and subtitle timing.
+6. Timeline and MP4 assembly with tested codecs and device limits.
 
 ## Device constraints
 The target phone is an Android device with limited compute and storage compared with a desktop GPU. Keep the local interface lightweight. Treat large diffusion and video models as remote/optional workloads unless benchmarks prove they can run acceptably on-device. Never promise unlimited free remote generation.
