@@ -7,7 +7,7 @@ A mobile-first story-to-screen workspace for original stories and LAST CROWN, su
 - Static browser application in `studio/index.html`.
 - Local project creation, listing, JSON export and import.\n- Per-project asset library for JPG, PNG and WebP images, with character/scene/general categories, labels, descriptions, tags, preview and delete. Character and scene assets can be linked by record ID and previewed beside the corresponding character or scene. Images are embedded as data URLs in local storage and included in JSON backups.
 - Multiple episode records per project, separate episode scripts, character profiles with visual-continuity notes, and episode-linked scene/shot records stored in browser local storage.
-- Scene plans can be edited, deleted and exported as Markdown.
+- Scene plans can be edited, deleted and exported as Markdown. A selected episode can also be exported as a production handoff pack combining its script, scene breakdown, character bible, linked visual references, runtime estimate and missing-item checklist.
 - Local prompt builders generate reusable character-reference and scene-image prompts from project metadata, Character Bible appearance locks and scene shot details. They do not call a model.
 - Offline production-pack export combines character continuity sheets and scene prompts into a downloadable text file.
 - Comic/storyboard builder arranges Asset Library images into numbered pages, supports speech/thought/caption/sound text overlays, panel editing, within-page drag-and-drop and touch-friendly arrow reordering, per-panel 12-column width spans, page preview, image fit/crop and focal positioning, page background themes, panel border styles, and self-contained HTML export with print colour preservation for PDF output.
