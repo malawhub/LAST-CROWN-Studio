@@ -117,7 +117,7 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 #motionStudio.director-screen .director-asset{padding:5px;background:#1b1b22;color:#eee;border:1px solid #383842;text-align:left;min-width:0}
 #motionStudio.director-screen .director-asset img{display:block;width:100%;height:68px;object-fit:contain;background:#08080b;border-radius:6px}
 #motionStudio.director-screen .director-asset small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
-#motionStudio.director-screen .director-main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,1fr);gap:12px;align-items:start}
+#motionStudio.director-screen .director-main>p:first-of-type{display:none}#motionStudio.director-screen .director-main{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,1fr);gap:12px;align-items:start}
 #motionStudio.director-screen .director-main .stage-wrap{grid-column:1;grid-row:1}
 #motionStudio.director-screen .director-main .stage-tools{grid-column:2;grid-row:1;max-height:68vh;overflow:auto}
 #motionStudio.director-screen .director-main .actor-quick-controls{grid-column:1/-1;grid-row:2}
@@ -264,7 +264,7 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 </section>
 <section class="panel wide director-screen" id="motionStudio">
 <h2>DIRECTOR STUDIO <span class="status">LIVE MOVIE STAGE</span></h2>
-<div class="director-toolbar"><button type="button" id="directorPlay">▶ Play scene</button><button type="button" class="secondary" id="directorStop">■ Stop</button><button type="button" class="secondary" data-open-workspace="assetLibrary">＋ Add / manage assets</button><button type="button" class="secondary" data-open-workspace="audioStudio">🎙 Voice & sound</button><span class="director-spacer"></span><button type="button" class="secondary" data-open-workspace="episodeTimeline">Timeline</button></div>
+<div class="director-toolbar"><button type="button" id="directorPlay">▶ Play scene</button><button type="button" class="secondary" id="directorStop">■ Stop</button><button type="button" class="secondary" id="directorFullscreen">⛶ Full screen</button><button type="button" class="secondary" data-open-workspace="assetLibrary">＋ Add / manage assets</button><button type="button" class="secondary" data-open-workspace="audioStudio">🎙 Voice & sound</button><span class="director-spacer"></span><button type="button" class="secondary" data-open-workspace="episodeTimeline">Timeline</button></div>
 <div class="director-library" id="directorLibrary"><div class="director-library-head"><strong>MEDIA & CHARACTER LIBRARY</strong><div class="director-timeline-actions"><button type="button" class="secondary" id="directorRefreshAssets">Refresh</button><button type="button" class="secondary" data-open-workspace="assetLibrary">Import media</button></div></div><div class="director-library-empty">Choose a project to load its characters, backgrounds and props.</div></div>
 <div class="director-main"><p class="muted">Animate a transparent character image over a scene background using lightweight motion presets. This is real-time 2D compositing, not AI animation or full 3D character rigging. Use PNG/WebP character cut-outs for the cleanest result.</p>
 <div class="actor-quick-controls">
@@ -805,6 +805,26 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventL
  const observer=new MutationObserver(()=>{if($('motionStudio')?.classList.contains('focus-target')){drawLibrary();drawTimeline()}});
  observer.observe(root,{attributes:true,attributeFilter:['class']});
  });})();
+</script>
+
+
+<script>
+(()=>{document.addEventListener('DOMContentLoaded',()=>{
+ const stage=document.getElementById('motionStudio'),btn=document.getElementById('directorFullscreen');
+ if(!stage||!btn)return;
+ btn.addEventListener('click',async()=>{
+  try{
+   if(document.fullscreenElement){await document.exitFullscreen();btn.textContent='⛶ Full screen'}
+   else{await stage.requestFullscreen();btn.textContent='⛶ Exit full screen'}
+  }catch(e){const m=document.getElementById('motionMessage');if(m)m.textContent='Full screen is not available in this app view. Open the studio in your browser to use it.'}
+ });
+ document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement)btn.textContent='⛶ Full screen'});
+ document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea,select,[contenteditable=true]'))return;
+  if(e.code==='Space'&&stage.contains(document.activeElement) || e.code==='Space'&&document.fullscreenElement===stage){e.preventDefault();document.getElementById('directorPlay')?.click()}
+  if(e.key==='Escape'&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+ });
+});})();
 </script>
 
 </body></html>
