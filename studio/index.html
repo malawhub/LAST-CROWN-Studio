@@ -249,6 +249,14 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 </section>
 <section class="panel wide" id="audioStudio"><h2>Audio & subtitle studio</h2>
 <p class="muted">Record narration or dialogue with your microphone, import existing audio, attach clips to an episode or scene, and prepare timed subtitles. Recording requires microphone permission. Audio stays in this browser's IndexedDB; it is not uploaded.</p>
+<div class="project" id="voiceProfilePanel" style="border-color:#806a3d;margin:14px 0;padding:14px">
+<strong style="color:#e7c57e">MY VOICE · PERSONAL VOICE REFERENCE</strong>
+<p class="muted">Record a clean 20–30 second sample in your own voice, or import a recording. It stays on this device. You can play or download it as a reference when using a compatible voice-generation service. This sample does not by itself create a cloned voice.</p>
+<div class="field"><label for="voiceProfileTitle">Voice sample name</label><input id="voiceProfileTitle" maxlength="100" value="My voice reference" placeholder="My narration voice"></div>
+<div class="actions"><button type="button" id="voiceProfileRecord">Record my voice sample</button><button type="button" class="secondary" id="voiceProfileStop" disabled>Stop & save sample</button><label class="secondary" style="padding:11px 16px;border-radius:9px;cursor:pointer">Import my voice<input id="voiceProfileFile" type="file" accept="audio/*" hidden></label></div>
+<p id="voiceProfileMessage" class="muted" role="status" aria-live="polite">No voice reference saved yet. Record in a quiet room and speak naturally.</p>
+<div id="voiceProfileSaved"></div>
+</div>
 <div class="grid">
 <div class="field"><label for="audioTitle">Audio clip title</label><input id="audioTitle" maxlength="140" placeholder="Narration — opening scene"></div>
 <div class="field"><label for="audioType">Audio type</label><select id="audioType"><option value="narration">Narration</option><option value="dialogue">Dialogue</option><option value="ambience">Ambience / effects</option><option value="music">Music</option><option value="other">Other</option></select></div>
@@ -515,6 +523,49 @@ async function saveAudioBlob(blob,source){const p=activeProject(),ep=projectEpis
 document.getElementById('audioFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(!file.type.startsWith('audio/')){document.getElementById('audioMessage').textContent='Choose a valid audio file.';return}await saveAudioBlob(file,'Imported audio');e.target.value=''});
 document.getElementById('startRecording').addEventListener('click',async()=>{const msg=document.getElementById('audioMessage');if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){msg.textContent='Microphone recording is not supported in this browser. You can still import an audio file.';return}try{recordingStream=await navigator.mediaDevices.getUserMedia({audio:true});recordedChunks=[];let options={};if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))options.mimeType='audio/webm;codecs=opus';mediaRecorder=new MediaRecorder(recordingStream,options);mediaRecorder.ondataavailable=e=>{if(e.data?.size)recordedChunks.push(e.data)};mediaRecorder.onerror=()=>{msg.textContent='Recording failed. Try importing an audio file instead.'};mediaRecorder.onstop=async()=>{const blob=new Blob(recordedChunks,{type:mediaRecorder.mimeType||'audio/webm'});recordingStream?.getTracks().forEach(t=>t.stop());recordingStream=null;await saveAudioBlob(blob,'Recording');document.getElementById('startRecording').disabled=false;document.getElementById('stopRecording').disabled=true};mediaRecorder.start();document.getElementById('startRecording').disabled=true;document.getElementById('stopRecording').disabled=false;msg.textContent='Recording… Speak clearly, then press Stop & save.'}catch(err){recordingStream?.getTracks().forEach(t=>t.stop());recordingStream=null;msg.textContent='Microphone unavailable: '+err.message}});
 document.getElementById('stopRecording').addEventListener('click',()=>{if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop()});
+let voiceProfileRecorder=null,voiceProfileStream=null,voiceProfileChunks=[];
+async function saveVoiceProfile(blob){
+ const msg=document.getElementById('voiceProfileMessage');
+ if(!blob||!blob.size){msg.textContent='No voice sample was captured.';return}
+ if(blob.size>25*1024*1024){msg.textContent='Sample is larger than 25 MB. Please record a shorter sample.';return}
+ try{
+  const id='voice-profile-user';
+  const old=(await getAudioClips()).find(x=>x.id===id);
+  await putAudioClip({id,projectId:'__voice_profile__',episodeId:'__voice_profile__',sceneId:'',title:document.getElementById('voiceProfileTitle').value.trim()||'My voice reference',type:'voice-profile',mime:blob.type||'audio/webm',blob,created:new Date().toISOString(),purpose:'User-provided voice reference'});
+  msg.textContent='Your voice reference is saved on this device. It is not uploaded to ChatGPT or a voice service.';
+  await renderVoiceProfile();
+ }catch(err){msg.textContent='Could not save voice reference: '+err.message}
+}
+async function renderVoiceProfile(){
+ const box=document.getElementById('voiceProfileSaved');if(!box)return;box.replaceChildren();
+ try{
+  const sample=(await getAudioClips()).find(x=>x.id==='voice-profile-user');
+  if(!sample){box.className='muted';box.textContent='No saved voice reference.';return}
+  box.className='';const audio=document.createElement('audio');audio.controls=true;audio.preload='metadata';audio.style.cssText='width:100%;margin:8px 0';audio.src=URL.createObjectURL(sample.blob);
+  const meta=document.createElement('p');meta.className='muted';meta.textContent=sample.title+' · '+(sample.blob.size/1048576).toFixed(2)+' MB · saved on this device';
+  const actions=document.createElement('div');actions.className='actions';
+  const download=document.createElement('a');download.className='secondary';download.style.cssText='padding:9px 12px;border-radius:8px;color:inherit;text-decoration:none';download.href=URL.createObjectURL(sample.blob);download.download='my-voice-reference.'+(sample.mime.includes('ogg')?'ogg':sample.mime.includes('mp4')?'m4a':'webm');download.textContent='Download voice sample';
+  const del=document.createElement('button');del.type='button';del.className='secondary';del.textContent='Delete sample';del.addEventListener('click',async()=>{if(!confirm('Delete your saved voice reference from this device?'))return;await deleteAudioClip('voice-profile-user');await renderVoiceProfile();document.getElementById('voiceProfileMessage').textContent='Voice reference deleted from this device.'});
+  actions.append(download,del);box.append(meta,audio,actions);
+ }catch(err){box.textContent='Voice reference storage is unavailable: '+err.message}
+}
+document.getElementById('voiceProfileRecord').addEventListener('click',async()=>{
+ const msg=document.getElementById('voiceProfileMessage');
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){msg.textContent='Microphone recording is not supported here. Use Import my voice instead.';return}
+ try{
+  voiceProfileStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  voiceProfileChunks=[];const opts={};if(MediaRecorder.isTypeSupported('audio/webm;codecs=opus'))opts.mimeType='audio/webm;codecs=opus';
+  voiceProfileRecorder=new MediaRecorder(voiceProfileStream,opts);
+  voiceProfileRecorder.ondataavailable=e=>{if(e.data?.size)voiceProfileChunks.push(e.data)};
+  voiceProfileRecorder.onerror=()=>{msg.textContent='Voice recording failed. Try importing an audio file.'};
+  voiceProfileRecorder.onstop=async()=>{const blob=new Blob(voiceProfileChunks,{type:voiceProfileRecorder.mimeType||'audio/webm'});voiceProfileStream?.getTracks().forEach(t=>t.stop());voiceProfileStream=null;document.getElementById('voiceProfileRecord').disabled=false;document.getElementById('voiceProfileStop').disabled=true;await saveVoiceProfile(blob)};
+  voiceProfileRecorder.start();document.getElementById('voiceProfileRecord').disabled=true;document.getElementById('voiceProfileStop').disabled=false;msg.textContent='Recording your voice… Speak naturally for 20–30 seconds, then stop.';
+ }catch(err){voiceProfileStream?.getTracks().forEach(t=>t.stop());voiceProfileStream=null;msg.textContent='Microphone unavailable: '+err.message}
+});
+document.getElementById('voiceProfileStop').addEventListener('click',()=>{if(voiceProfileRecorder&&voiceProfileRecorder.state!=='inactive')voiceProfileRecorder.stop()});
+document.getElementById('voiceProfileFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(file){if(file.type.startsWith('audio/'))await saveVoiceProfile(file);else document.getElementById('voiceProfileMessage').textContent='Choose an audio file.'}e.target.value=''});
+renderVoiceProfile();
+
 function readSubtitleCues(){return readStore(SUBTITLE_KEY).filter(c=>c.projectId===activeProject()?.id&&c.episodeId===activeEpisodeId).sort((a,b)=>a.start-b.start)}
 function renderSubtitles(){const box=document.getElementById('subtitleList');if(!box)return;box.replaceChildren();const cues=readSubtitleCues();if(!cues.length){box.className='empty';box.textContent='No subtitle cues for this episode yet.';return}box.className='';cues.forEach((cue,i)=>{const row=document.createElement('article');row.className='project';const line=document.createElement('strong');line.textContent=(i+1)+'. '+formatSrtTime(cue.start)+' → '+formatSrtTime(cue.end);const text=document.createElement('p');text.textContent=cue.text;const actions=document.createElement('div');actions.className='actions';const del=document.createElement('button');del.type='button';del.className='secondary';del.textContent='Delete cue';del.addEventListener('click',()=>{const all=readStore(SUBTITLE_KEY).filter(x=>x.id!==cue.id);localStorage.setItem(SUBTITLE_KEY,JSON.stringify(all));renderSubtitles()});actions.append(del);row.append(line,text,actions);box.append(row)})}
 function formatSrtTime(seconds){const ms=Math.max(0,Math.round(Number(seconds)*1000)),h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000),mill=ms%1000;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+','+String(mill).padStart(3,'0')}
