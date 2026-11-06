@@ -77,6 +77,37 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 [hidden]{display:none!important}
 @media(max-width:600px){#quickStart .home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}#quickStart .home-tile{min-height:124px;padding:12px}#quickStart .home-tile strong{font-size:15px}}
 
+
+/* Director screen: keep the movie stage central and controls grouped around it */
+#motionStudio.director-screen{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:12px;align-items:start;padding:clamp(12px,2vw,22px);background:linear-gradient(145deg,#17151a,#0d0d11);border-color:#66502a}
+#motionStudio.director-screen>h2,#motionStudio.director-screen>p:first-of-type{grid-column:1/-1;margin:0}
+#motionStudio.director-screen>p:first-of-type{font-size:12px}
+#motionStudio.director-screen .stage-wrap{grid-column:1;grid-row:3;align-self:start;box-shadow:0 12px 38px #0008}
+#motionStudio.director-screen .stage-tools{grid-column:2;grid-row:3;display:grid;grid-template-columns:1fr 1fr;align-content:start;max-height: min(70vh,680px);overflow:auto;padding:10px;background:#101015;border:1px solid var(--line);border-radius:12px}
+#motionStudio.director-screen .actor-quick-controls{grid-column:1/-1;grid-row:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#motionStudio.director-screen .actor-card{min-width:0}
+#motionStudio.director-screen .actions,#motionStudio.director-screen .sound-dock,#motionStudio.director-screen>#motionMessage{grid-column:1/-1}
+#motionStudio.director-screen .sound-dock{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:8px}
+#motionStudio.director-screen .sound-dock p{grid-column:1/-1;margin:0}
+#motionStudio.director-screen .sound-dock .field{margin:0}
+#motionStudio.director-screen .sound-dock audio{width:100%}
+#motionStudio.director-screen .director-toolbar{grid-column:1/-1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#motionStudio.director-screen .director-toolbar button{min-height:42px}
+#motionStudio.director-screen .director-toolbar .director-spacer{flex:1}
+#motionStudio.director-screen .stage-wrap{min-width:0}
+#motionStudio.director-screen #motionCanvas{width:100%;height:auto;display:block;aspect-ratio:16/9}
+#motionStudio.director-screen .stage-tools .field{min-width:0}
+#motionStudio.director-screen .stage-tools .grid{grid-column:1/-1}
+#motionStudio.director-screen .stage-tools .field:has(#motionDialogue),#motionStudio.director-screen .stage-tools .field:has(#conversationText){grid-column:1/-1}
+@media(max-width:760px){
+ #motionStudio.director-screen{grid-template-columns:minmax(0,1fr);gap:10px}
+ #motionStudio.director-screen>h2,#motionStudio.director-screen>p:first-of-type,#motionStudio.director-screen .director-toolbar,#motionStudio.director-screen .stage-wrap,#motionStudio.director-screen .stage-tools,#motionStudio.director-screen .actor-quick-controls,#motionStudio.director-screen .actions,#motionStudio.director-screen .sound-dock,#motionStudio.director-screen>#motionMessage{grid-column:1;grid-row:auto}
+ #motionStudio.director-screen .stage-tools{grid-template-columns:repeat(2,minmax(0,1fr));max-height:none}
+ #motionStudio.director-screen .actor-quick-controls{grid-template-columns:1fr}
+ #motionStudio.director-screen .sound-dock{grid-template-columns:1fr}
+ #motionStudio.director-screen .sound-dock p{grid-column:1}
+}
+
 </style>
 </head>
 <body>
@@ -87,7 +118,7 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 <h2>Your studio is ready. What would you like to create?</h2>
 <p>Choose a starting point. Your stories, characters and movies stay saved on this device.</p>
 <div class="home-actions" aria-label="Main studio workspaces">
-<button type="button" class="home-tile" data-open-workspace="photoCinema"><span class="home-icon">▶</span><strong>Create a movie</strong><small>Turn story images into a cinematic sequence</small></button>
+<button type="button" class="home-tile" data-open-workspace="motionStudio"><span class="home-icon">▶</span><strong>Open Director Studio</strong><small>Build your movie directly on the 16:9 stage</small></button>
 <button type="button" class="home-tile" data-open-workspace="storyWorkspace"><span class="home-icon">✎</span><strong>Write a story</strong><small>Develop episodes, scripts and dialogue</small></button>
 <button type="button" class="home-tile" data-open-workspace="storyWorkspace" data-focus-element="characterName"><span class="home-icon">♙</span><strong>Characters</strong><small>Build character profiles and visual references</small></button>
 <button type="button" class="home-tile" data-open-workspace="motionStudio"><span class="home-icon">◈</span><strong>Animate</strong><small>Direct character movement on the movie stage</small></button>
@@ -193,8 +224,9 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 <progress id="cinemaProgress" max="100" value="0" style="width:100%;height:12px;accent-color:var(--gold)"></progress>
 <p id="cinemaMessage" class="muted" role="status" aria-live="polite">Upload photographs to begin.</p>
 </section>
-<section class="panel wide" id="motionStudio">
-<h2>2D character animation studio</h2>
+<section class="panel wide director-screen" id="motionStudio">
+<h2>DIRECTOR STUDIO <span class="status">LIVE MOVIE STAGE</span></h2>
+<div class="director-toolbar"><button type="button" id="directorPlay">▶ Play scene</button><button type="button" class="secondary" id="directorStop">■ Stop</button><button type="button" class="secondary" data-open-workspace="assetLibrary">＋ Add / manage assets</button><button type="button" class="secondary" data-open-workspace="audioStudio">🎙 Voice & sound</button><span class="director-spacer"></span><button type="button" class="secondary" data-open-workspace="episodeTimeline">Timeline</button></div>
 <p class="muted">Animate a transparent character image over a scene background using lightweight motion presets. This is real-time 2D compositing, not AI animation or full 3D character rigging. Use PNG/WebP character cut-outs for the cleanest result.</p>
 <div class="actor-quick-controls">
 <div class="field actor-card"><strong>Character 1</strong><label for="motionCharacter">Image</label><select id="motionCharacter"><option value="">Choose character image</option></select><label for="motionDelay">Start after (seconds)</label><input id="motionDelay" type="number" min="0" max="30" step="0.5" value="0"><label for="motionPreset">Action</label><select id="motionPreset"><option value="idle">Stand / breathe</option><option value="walk">Walk across</option><option value="run">Run across</option><option value="enter">Enter scene</option><option value="approach">Approach slowly</option><option value="retreat">Step backwards</option><option value="jump">Jump</option><option value="talk">Talk / gesture</option><option value="nod">Nod</option><option value="float">Float</option><option value="shake">Tremble / fear</option><option value="zoom">Camera push-in</option><option value="turn">Turn reaction</option></select><label for="motionScale">Size</label><input id="motionScale" type="range" min="15" max="120" value="55"><output id="motionScaleValue">55%</output><label for="motionPosition">Starting position</label><select id="motionPosition"><option value="center">Centre</option><option value="left">Left</option><option value="right">Right</option></select><label for="motionExpression">Expression / alternate pose</label><select id="motionExpression"><option value="">Use main image</option></select><label for="motionRotation">Rotation</label><input id="motionRotation" type="range" min="-180" max="180" value="0"><div class="actions"><button type="button" class="secondary" id="motionFlip1">Flip</button><button type="button" class="secondary" id="motionForward1">Bring forward</button><button type="button" class="secondary" id="motionBackward1">Send backward</button></div></div>
@@ -695,4 +727,21 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventL
  });
 })();
 </script>
+
+<script>
+(()=>{document.addEventListener('DOMContentLoaded',()=>{
+ const stage=document.getElementById('motionStudio');if(!stage)return;
+ const play=document.getElementById('directorPlay'),stop=document.getElementById('directorStop');
+ if(play)play.addEventListener('click',()=>document.getElementById('motionPreview')?.click());
+ if(stop)stop.addEventListener('click',()=>document.getElementById('motionStop')?.click());
+ document.querySelectorAll('#motionStudio [data-open-workspace]').forEach(b=>b.addEventListener('click',()=>{
+  const id=b.dataset.openWorkspace,target=document.getElementById(id);if(!target)return;
+  document.body.classList.add('workspace-open');
+  document.querySelectorAll('main>section.focus-target').forEach(x=>x.classList.remove('focus-target'));
+  target.classList.add('focus-target');const home=document.getElementById('returnHome');if(home)home.hidden=false;
+  target.scrollIntoView({behavior:'smooth',block:'start'});
+ }));
+ });})();
+</script>
+
 </body></html>
