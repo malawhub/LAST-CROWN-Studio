@@ -81,7 +81,7 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 /* Director screen: keep the movie stage central and controls grouped around it */
 #motionStudio.director-screen{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,1fr);gap:12px;align-items:start;padding:clamp(12px,2vw,22px);background:linear-gradient(145deg,#17151a,#0d0d11);border-color:#66502a}
 #motionStudio.director-screen>h2,#motionStudio.director-screen>p:first-of-type{grid-column:1/-1;margin:0}
-#motionStudio.director-screen>p:first-of-type{font-size:12px}
+#motionStudio.director-screen>p:first-of-type{display:none}
 #motionStudio.director-screen .stage-wrap{grid-column:1;grid-row:3;align-self:start;box-shadow:0 12px 38px #0008}
 #motionStudio.director-screen .stage-tools{grid-column:2;grid-row:3;display:grid;grid-template-columns:1fr 1fr;align-content:start;max-height: min(70vh,680px);overflow:auto;padding:10px;background:#101015;border:1px solid var(--line);border-radius:12px}
 #motionStudio.director-screen .actor-quick-controls{grid-column:1/-1;grid-row:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
@@ -734,13 +734,6 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventL
  const play=document.getElementById('directorPlay'),stop=document.getElementById('directorStop');
  if(play)play.addEventListener('click',()=>document.getElementById('motionPreview')?.click());
  if(stop)stop.addEventListener('click',()=>document.getElementById('motionStop')?.click());
- document.querySelectorAll('#motionStudio [data-open-workspace]').forEach(b=>b.addEventListener('click',()=>{
-  const id=b.dataset.openWorkspace,target=document.getElementById(id);if(!target)return;
-  document.body.classList.add('workspace-open');
-  document.querySelectorAll('main>section.focus-target').forEach(x=>x.classList.remove('focus-target'));
-  target.classList.add('focus-target');const home=document.getElementById('returnHome');if(home)home.hidden=false;
-  target.scrollIntoView({behavior:'smooth',block:'start'});
- }));
  });})();
 </script>
 
