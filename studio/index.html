@@ -75,6 +75,15 @@ body.beginner-mode.workspace-open #quickStart h2{font-size:15px;margin:0}
 body.beginner-mode.workspace-open #quickStart .actions{margin:7px 0 0}
 body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:13px}
 [hidden]{display:none!important}
+/* Guided beginner flow: show only the step the user selected */
+body.beginner-mode.workspace-open main>.grid:has(> .focus-target){display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+body.beginner-mode.workspace-open main>.grid:has(> .focus-target)>section:not(.focus-target){display:none!important}
+body.beginner-mode.workspace-open main>.grid>.focus-target{display:block!important;grid-column:1/-1!important}
+body.beginner-mode.workspace-open #quickStart>p{display:none}
+body.beginner-mode.workspace-open #quickStart h2{font-size:15px}
+#quickStart .home-actions{grid-template-columns:repeat(auto-fit,minmax(175px,1fr))}
+@media(max-width:600px){#quickStart .home-actions{grid-template-columns:1fr}#quickStart .home-tile{min-height:76px;display:grid;grid-template-columns:38px 1fr;align-items:center;column-gap:10px}#quickStart .home-tile .home-icon{grid-row:span 2}#quickStart .home-tile small{grid-column:2}}
+
 @media(max-width:600px){#quickStart .home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}#quickStart .home-tile{min-height:124px;padding:12px}#quickStart .home-tile strong{font-size:15px}}
 
 
@@ -155,19 +164,18 @@ body.beginner-mode.workspace-open #quickStart button{padding:8px 12px;font-size:
 <section class="panel" id="quickStart">
 <h2>Your studio is ready. What would you like to create?</h2>
 <p>Choose a starting point. Your stories, characters and movies stay saved on this device.</p>
-<div class="home-actions" aria-label="Main studio workspaces">
-<button type="button" class="home-tile" data-open-workspace="motionStudio"><span class="home-icon">▶</span><strong>Open Director Studio</strong><small>Build your movie directly on the 16:9 stage</small></button>
-<button type="button" class="home-tile" data-open-workspace="storyWorkspace"><span class="home-icon">✎</span><strong>Write a story</strong><small>Develop episodes, scripts and dialogue</small></button>
-<button type="button" class="home-tile" data-open-workspace="storyWorkspace" data-focus-element="characterName"><span class="home-icon">♙</span><strong>Characters</strong><small>Build character profiles and visual references</small></button>
-<button type="button" class="home-tile" data-open-workspace="motionStudio"><span class="home-icon">◈</span><strong>Animate</strong><small>Direct character movement on the movie stage</small></button>
-<button type="button" class="home-tile" data-open-workspace="movieTheatre"><span class="home-icon">▣</span><strong>My movies</strong><small>Watch and organise completed videos</small></button>
-<button type="button" class="home-tile" data-open-workspace="audioStudio" data-focus-element="voiceProfileTitle"><span class="home-icon">🎙</span><strong>My Voice</strong><small>Record your voice and prepare narration</small></button>
+<div class="home-actions" aria-label="Five simple movie-making steps">
+<button type="button" class="home-tile" data-open-workspace="createProjectPanel"><span class="home-icon">＋</span><strong>1. Create a movie</strong><small>Give your film a title and choose its style.</small></button>
+<button type="button" class="home-tile" data-open-workspace="storyWorkspace" data-focus-element="characterName"><span class="home-icon">♙</span><strong>2. My characters</strong><small>Add the actors who appear in your story.</small></button>
+<button type="button" class="home-tile" data-open-workspace="storyWorkspace" data-focus-element="sceneTitle"><span class="home-icon">🎬</span><strong>3. Make scenes</strong><small>Describe what happens and how the camera moves.</small></button>
+<button type="button" class="home-tile" data-open-workspace="audioStudio" data-focus-element="voiceProfileTitle"><span class="home-icon">🎙</span><strong>4. Voices & sounds</strong><small>Record dialogue, narration and sound effects.</small></button>
+<button type="button" class="home-tile" data-open-workspace="movieTheatre"><span class="home-icon">▶</span><strong>5. Watch my movie</strong><small>Preview and organise your finished clips.</small></button>
 </div>
 <div class="actions"><button type="button" id="returnHome" class="secondary" hidden>← Studio home</button><button type="button" id="advancedModeToggle" class="secondary">Open all production tools</button></div>
 </section>
 <section class="panel" aria-label="No-credit commitment"><h2>NO-CREDIT WORKFLOW</h2><p class="muted">This studio's built-in tools work locally in your browser. No AI credits, subscriptions or generation API keys are required. Prompt builders organise your production instructions; they do not generate images or video. Media creation and editing will prioritise offline, free software.</p></section>
 <div class="grid">
-<section class="panel"><h2>Start a project</h2>
+<section class="panel focusable-workspace" id="createProjectPanel"><h2>Create a movie</h2><p class="muted">Start with just a title and a short description. You can change the other settings later.</p>
 <form id="projectForm">
 <div class="field"><label for="title">Project title</label><input id="title" maxlength="120" required placeholder="Enter your story title"></div>
 <div class="field"><label for="idea">Story idea</label><textarea id="idea" maxlength="10000" required placeholder="Describe the story you want to tell..."></textarea></div>
@@ -856,7 +864,7 @@ if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventL
   const open=(id,focusId)=>{
    const target=document.getElementById(id);if(!target)return;
    body.classList.add('workspace-open');
-   document.querySelectorAll('main>section.focus-target').forEach(el=>el.classList.remove('focus-target'));
+   document.querySelectorAll('main .focus-target').forEach(el=>el.classList.remove('focus-target'));
    target.classList.add('focus-target');
    if(home)home.hidden=false;
    requestAnimationFrame(()=>{target.scrollIntoView({behavior:'smooth',block:'start'});if(focusId){const field=document.getElementById(focusId);if(field)setTimeout(()=>field.focus({preventScroll:true}),350)}});
